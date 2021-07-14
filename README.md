@@ -8,12 +8,14 @@ https://sourceforge.net/projects/boost/files/boost-binaries/1.76.0/
 Here I used:
 boost_1_76_0-msvc-14.1-64.exe	2021-04-14	194.2 MB
 
-I was building with the 8.1 SDK (to match my Python version), so you may not care and opt to see if 2019 Visual Studio works on your installation.  No more help here, you're on your own for modifying directions.  If you want to play it safe just copy me.  I was under tight timelines so I didn't want to mess around with it.  And if you aren't using Python, I would personally try the latest SDK and Visual Studio:
+I was building with the 8.1 SDK (to match my Python version), so you may not care and opt to see if 2019 Visual Studio works on your installation.  No more help here, you're on your own for modifying directions (although I do provide a SDK 10.x version under releases, it's compiled with MSVC 14.1).  If you want to play it safe just copy me.  I was under tight timelines so I didn't want to mess around with it.  And if you aren't using Python, I would personally try the latest SDK and Visual Studio:
 boost_1_76_0-msvc-14.2-64.exe	2021-04-14	180.5 MB
 
 1(b): My rationale (note, sleep deprived):
 
-My goal is to link this to this Enthought/pyql project https://github.com/enthought/pyql so I kept the build at Microsoft SDK 8.1 (it's a Cython wrapper for QuantLib, to make it more compatible with Python's NumPy, Pandas, SciPy, date functions, formats, etc., and I happen to have Python 3.8.5 Ananconda installed, which uses MSVC 14.1 - I "assumed" it's on the 8.1 SDK here; it may be on 10.x, who knows).  In order to use MSVC 14.1 (Visual Studio 2017 and the 8.1 SDK), I temporarily removed the 2019 Microsoft Build Tools that were installed (as Boost's "bootstrap.bat" would always detect the latest MSVC version on the system, so I was getting MSVC 14.2 builds - not what I wanted).  The reason for not passing command line arguments being the steps that follow don't allow a lot of flexibility, not with my minimial knowledge and testing anyhow (they just don't work).
+My goal is to link this to this Enthought/pyql project https://github.com/enthought/pyql so I kept the build at Microsoft SDK 8.1 (it's a Cython wrapper for QuantLib, to make it more compatible with Python's NumPy, Pandas, SciPy, date functions, formats, etc., and I happen to have Python 3.8.5 Ananconda installed, which uses MSVC 14.1 - I "assumed" it's on the 8.1 SDK here; it may be on 10.x, who knows).  In order to use MSVC 14.1 (Visual Studio 2017 and the 8.1 SDK), I temporarily removed the 2019 Microsoft Build Tools that were installed (as Boost's "bootstrap.bat" would always detect the latest MSVC version on the system, so I was getting MSVC 14.2 builds - not what I wanted).  The reason for not passing command line arguments being the steps that follow don't allow a lot of flexibility, not with my minimial knowledge and testing anyhow (they just don't work).  Of course after spending HOURS making this build the proper QuantLib-x64-mt.lib, I found that the pyql project needs a DLL, which somehow has not yet been fixed on Windows builds... Which I'm trying to fix on my own presently.  If I have any success, it will be posted on my GitHub.  
+
+***Boost currently can't support DLL linking on Windows in 3 routines: 1) 'boost::noncopyable_::noncopyable', 2) 'QuantLib::Settings::evaluationDate_': class 'QuantLib::Settings::DateProxy', and finally, 3)'QuantLib::Settings::includeTodaysCashFlows_': class 'boost::optional<bool>'***
 
 2) Okay you have Boost downloaded somewhere - install it.  Try c:\Users\Public\boost_1_76_0\ since that's normally not restricted.  Now go there and cd into tools\build\ and type: bootstrap.bat 
 It will do some things for you on the programming side and get ready to build what wasn't built in the "pre-compiled" binaries.  Now copy b2.exe to c:\Users\Public\boost_1_76_0\.  Now type b2.exe and it will build the "unbuilt" libraries for you, and shove them in the bin.v2 directory.  After it completes, it may tell you what you ACTUALLY need to do next (I only had this with an accidental MSVC 14.2 compilation).  Here it is:
@@ -28,7 +30,7 @@ The following directory should be added to linker library paths:
 
     C:\Users\Public\boost_1_76_0\stage\lib
 
-Yes, finally some correct information is shown above!
+Yes, finally some correct information is provided above!  We aren't totally in the ice age.
 
 3) Go download QuantLib (I used the latest version here: https://www.quantlib.org/download.shtml v1.22 which I pulled here: https://github.com/lballabio/quantlib - just click the Green code button and download a zip if you don't use Git.  Unzip it somewhere (say C:\Users\Public\QuantLib\).  It will be in a QuantLib-1.22 directory under that if the version is the same.  Here (under that directory) you will see a QuantLib.sln file you need to open in the next step.
 
