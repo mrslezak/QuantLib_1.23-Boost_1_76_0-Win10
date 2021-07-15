@@ -17,11 +17,12 @@ My goal is to link this to this Enthought/pyql project https://github.com/enthou
 
 ***Boost currently can't support DLL linking on Windows in 3 routines: 1) 'boost::noncopyable_::noncopyable', 2) 'QuantLib::Settings::evaluationDate_': class 'QuantLib::Settings::DateProxy', and finally, 3)'QuantLib::Settings::includeTodaysCashFlows_': class 'boost::optional<bool>'***
 
-2) Okay you have Boost downloaded somewhere - install it.  Try c:\Users\Public\boost_1_76_0\ since that's normally not restricted.  Now go there with Powershell (Window-key + r, type: powershell) and cd into tools\build\ and type: ./bootstrap.bat 
-It will do some things for you on the programming side and get ready to build what wasn't built in the "pre-compiled" binaries.  Now copy b2.exe to c:\Users\Public\boost_1_76_0\.  Now type: 
+2) Okay you have Boost downloaded somewhere - install it.  Try c:\Users\Public\boost_1_76_0\ since that's normally not restricted.  Now go there with Powershell (Window-key + r, type: powershell) and: cd c:\Users\Public\boost_1_76_0\tools\build\ and type: ./bootstrap.bat 
+It will do some things for you on the programming side and get ready to build what wasn't built in the "pre-compiled" binaries.  Once it's done, copy b2.exe to c:\Users\Public\boost_1_76_0\.  Now type: 
     
 ./b2.exe toolset=msvc-14.1 address-model=64 release 
-(note: you can add: link=shared to get some DLLs to generate; I don't know if this is good enough for PyQL yet... leave out "release" if you want to generate debug pdb files)
+
+(note: you can add: link=shared to get DLLs to generate; still doesn't seem to satisfy PyQL though (errors mentioned earlier still present)... leave out "release" if you want to generate debug pdb files - I never debug anything, so I don't exactly care, but you may)
     
 and it will build the "unbuilt" libraries for you, and shove them in the bin.v2 directory.  After it completes, it may tell you what you ACTUALLY need to do next (I only had this with an accidental MSVC 14.2 compilation).  Here it is:
 
