@@ -3,7 +3,7 @@ MSVC14.1 Version (Visual Studio 2017 Community), for compiling QuantLib, with so
 
 Documentation is severely lacking on this project (Boost) - I wouldn't touch it if I didn't need to run a POC with QuantLib.  But since I finally figured out how to build it, after a couple LONG LONG DAYS, I figured I'd summarize how to do it here.  Just in case anyone else has to go through the hassle in the future (or I have to update it later on).
 
-1(a): Download the Boost version you need for your system, I'm only going to focus on Microsoft 10 since that's what I used.  This meant I downloaded "the precompiled binaries" which aren't actually fully compiled... makes a lot of sense, right?  
+1(a): Download the Boost version you need for your system, I'm only going to focus on Microsoft 10 since that's what I used.  This meant I downloaded "the precompiled binaries" which aren't actually fully compiled... makes a lot of sense, right?  (Actually, the project maintainer for QL (Luigi Ballabio <luigi.ballabio@gmail.com>) showed me you can just point to the c:\users\Pubic\boost\ for includes and libraries, point to the C:\Users\Public\boost_1_76_0\lib64-msvc-14.1 and they are there already, so you can skip this part, unless you have a specific reason to recompile them for your exact platform)
 https://sourceforge.net/projects/boost/files/boost-binaries/1.76.0/
 Here I used:
 boost_1_76_0-msvc-14.1-64.exe	2021-04-14	194.2 MB
@@ -15,16 +15,16 @@ boost_1_76_0-msvc-14.2-64.exe	2021-04-14	180.5 MB
 
 My goal is to link this to this Enthought/pyql project https://github.com/enthought/pyql so I kept the build at Microsoft SDK 8.1 (it's a Cython wrapper for QuantLib, to make it more compatible with Python's NumPy, Pandas, SciPy, date functions, formats, etc., and I happen to have Python 3.8.5 Ananconda installed, which uses MSVC 14.1 - I "assumed" it's on the 8.1 SDK here; it may be on 10.x, who knows).  In order to use MSVC 14.1 (Visual Studio 2017 and the 8.1 SDK), I temporarily removed the 2019 Microsoft Build Tools that were installed (as Boost's "bootstrap.bat" would always detect the latest MSVC version on the system, so I was getting MSVC 14.2 builds - not what I wanted).  The reason for not passing command line arguments being the steps that follow don't allow a lot of flexibility, not with my minimial knowledge and testing anyhow (they just don't work).  Of course after spending HOURS making this build the proper QuantLib-x64-mt.lib, I found that the pyql project needs a DLL, which somehow has not yet been fixed on Windows builds... Which I'm trying to fix on my own presently.  If I have any success, it will be posted on my GitHub.  
 
-***Boost currently can't support DLL linking on Windows in 3 routines: 1) 'boost::noncopyable_::noncopyable', 2) 'QuantLib::Settings::evaluationDate_': class 'QuantLib::Settings::DateProxy', and finally, 3)'QuantLib::Settings::includeTodaysCashFlows_': class 'boost::optional<bool>'***
+***Boost currently can't support DLL linking on Windows in 3 routines: 1) 'boost::noncopyable_::noncopyable', 2) 'QuantLib::Settings::evaluationDate_': class 'QuantLib::Settings::DateProxy', and finally, 3)'QuantLib::Settings::includeTodaysCashFlows_': class 'boost::optional<bool>' - but these errors ONLY present themselves when the QuantLib code ql/settings.hpp line 37 is changed per the PyQL instructions to change the Singleton to a DLL ***
 
-2) Okay you have Boost downloaded somewhere - install it.  Try c:\Users\Public\boost_1_76_0\ since that's normally not restricted.  Now go there with Powershell (Window-key + r, type: powershell) and: cd c:\Users\Public\boost_1_76_0\tools\build\ and type: ./bootstrap.bat 
+2) (This part is optional - it should already be compiled, but if you want to use another compiler or for some other reason do it yourself from source, follow this).  Okay you have Boost downloaded somewhere - install it.  Try c:\Users\Public\boost_1_76_0\ since that's normally not restricted.  Now go there with Powershell (Window-key + r, type: powershell) and: cd c:\Users\Public\boost_1_76_0\tools\build\ and type: ./bootstrap.bat 
 It will do some things for you on the programming side and get ready to build what wasn't built in the "pre-compiled" binaries.  Once it's done, copy b2.exe to c:\Users\Public\boost_1_76_0\.  Now type: 
     
 ./b2.exe toolset=msvc-14.1 address-model=64 release 
 
 (note: you can add: link=shared to get DLLs to generate; still doesn't seem to satisfy PyQL though (errors mentioned earlier still present)... leave out "release" if you want to generate debug pdb files - I never debug anything, so I don't exactly care, but you may)
     
-and it will build the "unbuilt" libraries for you, and shove them in the bin.v2 directory.  After it completes, it may tell you what you ACTUALLY need to do next (I only had this with an accidental MSVC 14.2 compilation).  Here it is:
+and it will build the "unbuilt" libraries for you, and shove them in the bin.v2 directory.  After it completes, it may tell you what you ACTUALLY need to do next (I only had this with an accidental MSVC 14.2 compilation, not sure if I need to use Clang to get PyQL working, but this method likely allows it).  Here it is:
 
 The Boost C++ Libraries were successfully built!
 
