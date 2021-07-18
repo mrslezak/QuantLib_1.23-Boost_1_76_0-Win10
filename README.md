@@ -49,3 +49,6 @@ Yes, finally some correct information is provided above!  We aren't totally in t
 Hope that helped!  Back to work!
 
 If you want an E-book on QuantLib, here you can purchase one from the author for as little as $5.  Of course, pay what you want.  He'll take more money if you are feeling generous.  I bought it but honestly haven't had time to look at it yet.  There are few new texts on QuantLib so I expect it's as updated as you're going to get (compared to all the guides online) 2021-01-16.  It also deals with applying the library to the world of finance, so you may find that money well spent, especially if you're also a quant.
+
+https://leanpub.com/implementingquantlib (for the C++ version)
+https://leanpub.com/quantlibpythoncookbook (for the Python-SWIG version)
